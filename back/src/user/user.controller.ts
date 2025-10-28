@@ -14,19 +14,19 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  // @Roles('ADMIN')
+  @Roles('ADMIN')
   create(@Body() createUserDto: Prisma.UserCreateInput) {
     return this.userService.create(createUserDto);
   }
 
   @Get()
-  // @Roles('ADMIN')
+  @Roles('ADMIN')
   findAll(@Query('role') role?: 'STUDENT' | 'INSTRUCTOR') {
     return this.userService.findAll(role);
   }
 
   @Get(':id')
-  // @Roles('ADMIN')
+  @Roles('ADMIN')
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
@@ -50,7 +50,7 @@ export class UserController {
   }
 
   @Patch(':id/toggle-role')
-  // @Roles('ADMIN')
+  @Roles('ADMIN')
   @HttpCode(200) // No content response
   async updateActualRole(@Param('id') id: string) {
     return this.userService.toggleActualRole(+id);

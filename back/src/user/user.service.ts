@@ -1,14 +1,22 @@
 import { DatabaseService } from './../database/database.service';
 import { Injectable } from '@nestjs/common';
 import { Prisma, Role } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(private readonly databaseService: DatabaseService) {}
 
   async create(createUserDto: Prisma.UserCreateInput) {
+    const data: any = { ...createUserDto };
+    
+    // Hash password if provided
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+    
     return this.databaseService.user.create({
-      data: createUserDto,
+      data,
     })
   }
 
@@ -22,6 +30,7 @@ async findAll(role?: 'STUDENT' | 'INSTRUCTOR') {
       firstName: true,
       lastName: true,
       email: true,
+      role: true,
       domain: true,
       experienceLvl: true,
       profilePicUrl: true,
@@ -40,6 +49,7 @@ async findAll(role?: 'STUDENT' | 'INSTRUCTOR') {
       firstName: true,
       lastName: true,
       email: true,
+      role: true,
       domain: true,
       experienceLvl: true,
       profilePicUrl: true,
@@ -64,6 +74,12 @@ async findAll(role?: 'STUDENT' | 'INSTRUCTOR') {
 
   async update(id: number, updateUserDto: Prisma.UserUpdateInput, profilePic?: Express.Multer.File) {
     const data: any = { ...updateUserDto };
+    
+    // Hash password if provided
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, 10);
+    }
+    
     if (profilePic) {
       data.profilePicUrl = `/uploads/${profilePic.filename}`;
     }

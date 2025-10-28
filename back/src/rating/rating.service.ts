@@ -14,7 +14,25 @@ export class RatingService {
   }
 
   async findAll() {
-    return this.databaseService.rating.findMany()
+    return this.databaseService.rating.findMany({
+      include: {
+        student: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true
+          }
+        },
+        course: {
+          select: {
+            id: true,
+            title: true,
+            category: true
+          }
+        }
+      }
+    })
   }
 
   async findOne(id: number) {
