@@ -17,6 +17,7 @@ import InstructorDashboard from "./pages/InstructorDashboard";
 import ProtectedRoute from './components/ProtectedRoutes.jsx';
 import AdminDashboard from './pages/AdminDashboard';
 import InstructorProfile from './pages/InstructorProfile';
+import InstructorPortfolio from './pages/InstructorPortfolio';
 import Chatbot from './pages/ChatbotPage.jsx';
 import About from './pages/About.jsx';
 
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/course/:id" element={<CourseDetail />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/instructors" element={<Instructors />} />
+          <Route path="/instructor/:instructorId" element={<InstructorPortfolio />} />
           <Route path="/instructor-dashboard" element={<InstructorDashboard />} />
           <Route path="/instructor/profile" element={<InstructorProfile />} />
           <Route path="/admin" element={<AdminDashboard />} />

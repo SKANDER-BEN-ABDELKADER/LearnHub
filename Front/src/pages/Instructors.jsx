@@ -1,11 +1,13 @@
 import * as React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import { Search, Filter, Users, BookOpen, Star } from "lucide-react";
+import { Button } from "../components/ui/button";
+import { Search, Filter, Users, BookOpen, Star, ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { useAuth } from "../components/context/AuthContext";
@@ -161,25 +163,27 @@ const Instructors = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredInstructors.map((instructor) => (
-                <Card key={instructor.id} className="h-full hover:shadow-lg transition-shadow">
+                <Card key={instructor.id} className="h-full hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-blue-200 group">
                   <CardHeader className="flex flex-row items-center gap-4">
                     <img
                       src={getProfilePicUrl(instructor.profilePicUrl)}
                       alt={`${instructor.firstName} ${instructor.lastName}`}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+                      className="w-16 h-16 rounded-full object-cover border-2 border-blue-500 group-hover:border-purple-500 transition-colors"
                       onError={(e) => {
                         e.target.src = "/placeholder.svg";
                       }}
                     />
-                    <div>
-                      <CardTitle className="text-xl mb-1">{instructor.firstName} {instructor.lastName}</CardTitle>
+                    <div className="flex-1">
+                      <CardTitle className="text-xl mb-1 group-hover:text-blue-600 transition-colors">
+                        {instructor.firstName} {instructor.lastName}
+                      </CardTitle>
                       <CardDescription>{instructor.domain || instructor.experienceLvl || "No bio available"}</CardDescription>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-wrap gap-2 mb-2">
-                      {instructor.domain && <Badge variant="secondary">{instructor.domain}</Badge>}
-                      {instructor.experienceLvl && <Badge variant="secondary">{instructor.experienceLvl}</Badge>}
+                  <CardContent className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      {instructor.domain && <Badge variant="secondary" className="bg-blue-100 text-blue-700">{instructor.domain}</Badge>}
+                      {instructor.experienceLvl && <Badge variant="outline">{instructor.experienceLvl}</Badge>}
                     </div>
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
@@ -191,6 +195,12 @@ const Instructors = () => {
                         <span>{instructor.coursesEnrolled?.length || 0} students</span>
                       </div>
                     </div>
+                    <Link to={`/instructor/${instructor.id}`}>
+                      <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 mt-2">
+                        View Profile
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
                   </CardContent>
                 </Card>
               ))}
