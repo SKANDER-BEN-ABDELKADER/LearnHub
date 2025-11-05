@@ -547,7 +547,7 @@ const Index = () => {
                         <span className="text-sm font-medium">{instructor.experienceLvl} Level</span>
                       </div>
                     )}
-                    <Link to="/instructors">
+                    <Link to={`/instructor/${instructor.id}`}>
                       <Button variant="outline" className="w-full group-hover:bg-blue-600 group-hover:text-white transition-colors">
                         View Profile
                       </Button>

@@ -31,7 +31,12 @@ import {
   Clock,
   Video,
   Filter,
-  Search
+  Search,
+  FileText,
+  Tag,
+  Layers,
+  CheckCircle2,
+  X
 } from "lucide-react";
 
 const API_BASE = "http://localhost:3000";
@@ -634,9 +639,17 @@ const InstructorDashboard = () => {
         
         {/* Add Course Modal */}
         <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-          <DialogContent className="max-w-5xl max-h-[85vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle className="text-2xl">Add New Course</DialogTitle>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader className="border-b pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                  <Plus className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-2xl font-bold">Create New Course</DialogTitle>
+                  <p className="text-sm text-gray-500 mt-1">Fill in the details to create your course</p>
+                </div>
+              </div>
             </DialogHeader>
             <div className="space-y-6">
               {/* <div className="text-sm text-gray-600">Provide the basic details and upload a short intro video. We’ll analyze it to auto-fill learning outcomes and requirements.</div> */}
