@@ -325,16 +325,16 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex justify-between items-center">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-blue-900 mb-2">Admin Dashboard</h1>
-            <p className="text-blue-700">Manage users, courses, and reviews</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-900 mb-2">Admin Dashboard</h1>
+            <p className="text-sm sm:text-base text-blue-700">Manage users, courses, and reviews</p>
           </div>
           <Button
             onClick={logout}
             variant="outline"
-            className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400"
+            className="border-red-300 text-red-700 hover:bg-red-100 hover:border-red-400 w-full sm:w-auto"
           >
             <LogOut className="w-4 h-4 mr-2" />
             Logout
@@ -343,17 +343,17 @@ const AdminDashboard = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-blue-100">
-            <TabsTrigger value="users" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-              <Users className="w-4 h-4" />
-              Users ({filteredUsers.length})
+            <TabsTrigger value="users" className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-xs sm:text-sm">
+              <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Users</span> ({filteredUsers.length})
             </TabsTrigger>
-            <TabsTrigger value="courses" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-              <BookOpen className="w-4 h-4" />
-              Courses ({filteredCourses.length})
+            <TabsTrigger value="courses" className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-xs sm:text-sm">
+              <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Courses</span> ({filteredCourses.length})
             </TabsTrigger>
-            <TabsTrigger value="reviews" className="flex items-center gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-              <Star className="w-4 h-4" />
-              Reviews ({filteredReviews.length})
+            <TabsTrigger value="reviews" className="flex items-center gap-1 sm:gap-2 data-[state=active]:bg-blue-600 data-[state=active]:text-white text-xs sm:text-sm">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Reviews</span> ({filteredReviews.length})
             </TabsTrigger>
           </TabsList>
 
@@ -361,10 +361,10 @@ const AdminDashboard = () => {
           <TabsContent value="users" className="mt-6">
             <Card className="border-blue-200 shadow-lg">
               <CardHeader className="bg-blue-50 border-b border-blue-200">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
                   <div>
-                    <CardTitle className="text-blue-900">User Management</CardTitle>
-                    <CardDescription className="text-blue-700">Add, edit, and delete users</CardDescription>
+                    <CardTitle className="text-lg sm:text-xl text-blue-900">User Management</CardTitle>
+                    <CardDescription className="text-sm sm:text-base text-blue-700">Add, edit, and delete users</CardDescription>
                   </div>
                   <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
                     <DialogTrigger asChild>
@@ -373,18 +373,18 @@ const AdminDashboard = () => {
                           setEditingUser(null);
                           resetUserForm();
                         }}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto"
                       >
                         <Plus className="w-4 h-4 mr-2" />
                         Add User
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="w-[90%] sm:max-w-[425px] max-h-[90vh] overflow-y-auto">
                       <DialogHeader>
-                        <DialogTitle className="text-blue-900">
+                        <DialogTitle className="text-base sm:text-lg text-blue-900">
                           {editingUser ? "Edit User" : "Add New User"}
                         </DialogTitle>
-                        <DialogDescription>
+                        <DialogDescription className="text-sm">
                           {editingUser ? "Update user information" : "Create a new user account"}
                         </DialogDescription>
                       </DialogHeader>
@@ -457,11 +457,11 @@ const AdminDashboard = () => {
                   </Dialog>
                 </div>
                 {/* User Filters */}
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="userRoleFilter">Role:</Label>
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Label htmlFor="userRoleFilter" className="text-sm min-w-[40px]">Role:</Label>
                     <Select value={userFilters.role} onValueChange={(value) => setUserFilters({...userFilters, role: value})}>
-                      <SelectTrigger id="userRoleFilter" className="w-32">
+                      <SelectTrigger id="userRoleFilter" className="w-full sm:w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -472,75 +472,78 @@ const AdminDashboard = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="userSearch">Search:</Label>
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:max-w-xs">
+                    <Label htmlFor="userSearch" className="text-sm min-w-[50px]">Search:</Label>
                     <Input
                       id="userSearch"
                       placeholder="Search by name or email..."
                       value={userFilters.search}
                       onChange={(e) => setUserFilters({...userFilters, search: e.target.value})}
-                      className="w-64"
+                      className="flex-1"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 {loading.users ? (
                   <div className="p-8 text-center text-blue-600">Loading users...</div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-blue-50">
-                        <TableHead className="text-blue-900">Name</TableHead>
-                        <TableHead className="text-blue-900">Email</TableHead>
-                        <TableHead className="text-blue-900">Role</TableHead>
-                        <TableHead className="text-blue-900">Actions</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Name</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden md:table-cell">Email</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Role</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredUsers.map((user) => (
                         <TableRow key={user.id} className="hover:bg-blue-50">
-                          <TableCell className="font-medium">
-                            {user.firstName} {user.lastName}
+                          <TableCell className="font-medium text-xs sm:text-sm">
+                            <div>
+                              <div>{user.firstName} {user.lastName}</div>
+                              <div className="text-xs text-gray-500 md:hidden">{user.email}</div>
+                            </div>
                           </TableCell>
-                          <TableCell>{user.email}</TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden md:table-cell">{user.email}</TableCell>
                           <TableCell>
-                            <Badge variant={user.role === 'ADMIN' ? 'destructive' : user.role === 'INSTRUCTOR' ? 'default' : 'secondary'}>
+                            <Badge variant={user.role === 'ADMIN' ? 'destructive' : user.role === 'INSTRUCTOR' ? 'default' : 'secondary'} className="text-xs">
                               {user.role}
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1 sm:gap-2">
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleEditUser(user)}
-                                className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                                className="border-blue-300 text-blue-700 hover:bg-blue-100 p-1 sm:p-2"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="border-red-300 text-red-700 hover:bg-red-100"
+                                    className="border-red-300 text-red-700 hover:bg-red-100 p-1 sm:p-2"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                   </Button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent className="w-[90%] max-w-md">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete User</AlertDialogTitle>
-                                    <AlertDialogDescription>
+                                    <AlertDialogTitle className="text-base sm:text-lg">Delete User</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-sm">
                                       Are you sure you want to delete {user.firstName} {user.lastName}? This action cannot be undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                                    <AlertDialogCancel className="m-0">Cancel</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => handleDeleteUser(user.id)}
-                                      className="bg-red-600 hover:bg-red-700"
+                                      className="bg-red-600 hover:bg-red-700 m-0"
                                     >
                                       Delete
                                     </AlertDialogAction>
@@ -563,15 +566,15 @@ const AdminDashboard = () => {
             <Card className="border-blue-200 shadow-lg">
               <CardHeader className="bg-blue-50 border-b border-blue-200">
                 <div className="mb-4">
-                  <CardTitle className="text-blue-900">Course Management</CardTitle>
-                  <CardDescription className="text-blue-700">Edit and delete courses</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl text-blue-900">Course Management</CardTitle>
+                  <CardDescription className="text-sm sm:text-base text-blue-700">Edit and delete courses</CardDescription>
                 </div>
                 {/* Course Filters */}
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="courseCategoryFilter">Category:</Label>
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Label htmlFor="courseCategoryFilter" className="text-sm min-w-[65px]">Category:</Label>
                     <Select value={courseFilters.category} onValueChange={(value) => setCourseFilters({...courseFilters, category: value})}>
-                      <SelectTrigger id="courseCategoryFilter" className="w-40">
+                      <SelectTrigger id="courseCategoryFilter" className="w-full sm:w-40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -582,10 +585,10 @@ const AdminDashboard = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="courseLevelFilter">Level:</Label>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Label htmlFor="courseLevelFilter" className="text-sm min-w-[65px] sm:min-w-[40px]">Level:</Label>
                     <Select value={courseFilters.level} onValueChange={(value) => setCourseFilters({...courseFilters, level: value})}>
-                      <SelectTrigger id="courseLevelFilter" className="w-32">
+                      <SelectTrigger id="courseLevelFilter" className="w-full sm:w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -596,81 +599,84 @@ const AdminDashboard = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="courseSearch">Search:</Label>
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:max-w-xs">
+                    <Label htmlFor="courseSearch" className="text-sm min-w-[65px] sm:min-w-[50px]">Search:</Label>
                     <Input
                       id="courseSearch"
                       placeholder="Search by title..."
                       value={courseFilters.search}
                       onChange={(e) => setCourseFilters({...courseFilters, search: e.target.value})}
-                      className="w-64"
+                      className="flex-1"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 {loading.courses ? (
                   <div className="p-8 text-center text-blue-600">Loading courses...</div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-blue-50">
-                        <TableHead className="text-blue-900">Title</TableHead>
-                        <TableHead className="text-blue-900">Category</TableHead>
-                        <TableHead className="text-blue-900">Level</TableHead>
-                        <TableHead className="text-blue-900">Price</TableHead>
-                        <TableHead className="text-blue-900">Status</TableHead>
-                        <TableHead className="text-blue-900">Actions</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Title</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden lg:table-cell">Category</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden md:table-cell">Level</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Price</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden sm:table-cell">Status</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredCourses.map((course) => (
                         <TableRow key={course.id} className="hover:bg-blue-50">
-                          <TableCell className="font-medium max-w-xs truncate" title={course.title}>
-                            {course.title}
+                          <TableCell className="font-medium max-w-[150px] sm:max-w-xs truncate text-xs sm:text-sm" title={course.title}>
+                            <div>
+                              <div>{course.title}</div>
+                              <div className="text-xs text-gray-500 lg:hidden">{course.category}</div>
+                            </div>
                           </TableCell>
-                          <TableCell>{course.category}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{course.level}</Badge>
+                          <TableCell className="text-xs sm:text-sm hidden lg:table-cell">{course.category}</TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <Badge variant="outline" className="text-xs">{course.level}</Badge>
                           </TableCell>
-                          <TableCell>${course.price}</TableCell>
-                          <TableCell>
-                            <Badge variant={course.hided ? 'secondary' : 'default'}>
+                          <TableCell className="text-xs sm:text-sm">${course.price}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <Badge variant={course.hided ? 'secondary' : 'default'} className="text-xs">
                               {course.hided ? 'Hidden' : 'Visible'}
                             </Badge>
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1 sm:gap-2">
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleEditCourse(course)}
-                                className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                                className="border-blue-300 text-blue-700 hover:bg-blue-100 p-1 sm:p-2"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="border-red-300 text-red-700 hover:bg-red-100"
+                                    className="border-red-300 text-red-700 hover:bg-red-100 p-1 sm:p-2"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                   </Button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent className="w-[90%] max-w-md">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Course</AlertDialogTitle>
-                                    <AlertDialogDescription>
+                                    <AlertDialogTitle className="text-base sm:text-lg">Delete Course</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-sm">
                                       Are you sure you want to delete "{course.title}"? This action cannot be undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                                    <AlertDialogCancel className="m-0">Cancel</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => handleDeleteCourse(course.id)}
-                                      className="bg-red-600 hover:bg-red-700"
+                                      className="bg-red-600 hover:bg-red-700 m-0"
                                     >
                                       Delete
                                     </AlertDialogAction>
@@ -689,10 +695,10 @@ const AdminDashboard = () => {
 
             {/* Course Edit Dialog */}
             <Dialog open={courseDialogOpen} onOpenChange={setCourseDialogOpen}>
-              <DialogContent className="sm:max-w-[525px]">
+              <DialogContent className="w-[90%] sm:max-w-[525px] max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle className="text-blue-900">Edit Course</DialogTitle>
-                  <DialogDescription>Update course information</DialogDescription>
+                  <DialogTitle className="text-base sm:text-lg text-blue-900">Edit Course</DialogTitle>
+                  <DialogDescription className="text-sm">Update course information</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleCourseSubmit}>
                   <div className="grid gap-4 py-4">
@@ -776,15 +782,15 @@ const AdminDashboard = () => {
             <Card className="border-blue-200 shadow-lg">
               <CardHeader className="bg-blue-50 border-b border-blue-200">
                 <div className="mb-4">
-                  <CardTitle className="text-blue-900">Review Management</CardTitle>
-                  <CardDescription className="text-blue-700">Edit and delete reviews</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl text-blue-900">Review Management</CardTitle>
+                  <CardDescription className="text-sm sm:text-base text-blue-700">Edit and delete reviews</CardDescription>
                 </div>
                 {/* Review Filters */}
-                <div className="flex flex-wrap gap-4">
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="reviewRatingFilter">Rating:</Label>
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Label htmlFor="reviewRatingFilter" className="text-sm min-w-[50px]">Rating:</Label>
                     <Select value={reviewFilters.rating} onValueChange={(value) => setReviewFilters({...reviewFilters, rating: value})}>
-                      <SelectTrigger id="reviewRatingFilter" className="w-32">
+                      <SelectTrigger id="reviewRatingFilter" className="w-full sm:w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -797,86 +803,91 @@ const AdminDashboard = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="reviewSearch">Search:</Label>
+                  <div className="flex items-center gap-2 w-full sm:w-auto sm:flex-1 sm:max-w-xs">
+                    <Label htmlFor="reviewSearch" className="text-sm min-w-[50px]">Search:</Label>
                     <Input
                       id="reviewSearch"
                       placeholder="Search by course or user..."
                       value={reviewFilters.search}
                       onChange={(e) => setReviewFilters({...reviewFilters, search: e.target.value})}
-                      className="w-64"
+                      className="flex-1"
                     />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
+              <CardContent className="p-0 overflow-x-auto">
                 {loading.reviews ? (
                   <div className="p-8 text-center text-blue-600">Loading reviews...</div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-blue-50">
-                        <TableHead className="text-blue-900">Course</TableHead>
-                        <TableHead className="text-blue-900">User</TableHead>
-                        <TableHead className="text-blue-900">Rating</TableHead>
-                        <TableHead className="text-blue-900">Creation Date</TableHead>
-                        <TableHead className="text-blue-900">Update Date</TableHead>
-                        <TableHead className="text-blue-900">Actions</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Course</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden lg:table-cell">User</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Rating</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden md:table-cell">Creation Date</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden xl:table-cell">Update Date</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredReviews.map((review) => (
                         <TableRow key={review.id} className="hover:bg-blue-50">
-                          <TableCell className="font-medium">
-                            {review.course?.title || 'Unknown Course'}
+                          <TableCell className="font-medium text-xs sm:text-sm max-w-[150px] truncate" title={review.course?.title}>
+                            <div>
+                              <div>{review.course?.title || 'Unknown Course'}</div>
+                              <div className="text-xs text-gray-500 lg:hidden">
+                                {review.student ? `${review.student.firstName} ${review.student.lastName}` : 'Unknown User'}
+                              </div>
+                            </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden lg:table-cell">
                             {review.student ? `${review.student.firstName} ${review.student.lastName}` : 'Unknown User'}
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center gap-1">
-                              <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                              {review.value}
+                              <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs sm:text-sm">{review.value}</span>
                             </div>
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden md:table-cell">
                             {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'N/A'}
                           </TableCell>
-                          <TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden xl:table-cell">
                             {review.updatedAt ? new Date(review.updatedAt).toLocaleDateString() : 'N/A'}
                           </TableCell>
                           <TableCell>
-                            <div className="flex gap-2">
+                            <div className="flex gap-1 sm:gap-2">
                               <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleEditReview(review)}
-                                className="border-blue-300 text-blue-700 hover:bg-blue-100"
+                                className="border-blue-300 text-blue-700 hover:bg-blue-100 p-1 sm:p-2"
                               >
-                                <Edit className="w-4 h-4" />
+                                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
                               </Button>
                               <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="border-red-300 text-red-700 hover:bg-red-100"
+                                    className="border-red-300 text-red-700 hover:bg-red-100 p-1 sm:p-2"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
                                   </Button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent className="w-[90%] max-w-md">
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Review</AlertDialogTitle>
-                                    <AlertDialogDescription>
+                                    <AlertDialogTitle className="text-base sm:text-lg">Delete Review</AlertDialogTitle>
+                                    <AlertDialogDescription className="text-sm">
                                       Are you sure you want to delete this review? This action cannot be undone.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+                                    <AlertDialogCancel className="m-0">Cancel</AlertDialogCancel>
                                     <AlertDialogAction
                                       onClick={() => handleDeleteReview(review.id)}
-                                      className="bg-red-600 hover:bg-red-700"
+                                      className="bg-red-600 hover:bg-red-700 m-0"
                                     >
                                       Delete
                                     </AlertDialogAction>
@@ -895,10 +906,10 @@ const AdminDashboard = () => {
 
             {/* Review Edit Dialog */}
             <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="w-[90%] sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle className="text-blue-900">Edit Review</DialogTitle>
-                  <DialogDescription>Update review information</DialogDescription>
+                  <DialogTitle className="text-base sm:text-lg text-blue-900">Edit Review</DialogTitle>
+                  <DialogDescription className="text-sm">Update review information</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleReviewSubmit}>
                   <div className="grid gap-4 py-4">

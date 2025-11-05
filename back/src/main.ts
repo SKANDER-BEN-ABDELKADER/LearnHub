@@ -3,9 +3,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { DatabaseService } from './database/database.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  
+  // Enable shutdown hooks for Prisma
+  const databaseService = app.get(DatabaseService);
+  await databaseService.enableShutdownHooks(app);
+  
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Remove non-whitelisted properties
     forbidNonWhitelisted: true, // Throw errors for non-whitelisted properties
