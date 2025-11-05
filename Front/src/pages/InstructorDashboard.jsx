@@ -813,7 +813,7 @@ const InstructorDashboard = () => {
                 {/* Right column: video */}
                 <div>
                   <Label className="text-sm font-medium mb-2 block">Intro Video</Label>
-                  <div className={`rounded-lg border-2 border-dashed border-gray-300 p-6 text-center`}>
+                  {/* <div className={`rounded-lg border-2 border-dashed border-gray-300 p-6 text-center`}>
                     <div className="text-gray-600">
                       <div className="font-medium mb-1">Upload a new video (optional)</div>
                     </div>
@@ -822,7 +822,7 @@ const InstructorDashboard = () => {
                       <input type="file" id="videoFile-edit" className="hidden" accept="video/*" onChange={handleVideoUpload} />
                     </div>
                     <p className="text-xs text-gray-500 mt-3">MP4 or WebM up to 100MB</p>
-                  </div>
+                  </div> */}
 
                   {(form.videoFile || editCourse?.videoUrl) && (
                     <div className="mt-3 rounded-md border p-3 text-sm">
