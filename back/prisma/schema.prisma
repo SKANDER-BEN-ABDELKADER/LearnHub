@@ -41,6 +41,7 @@ model Course {
   price       Int
   hided       Boolean  @default(false)
   videoUrl    String?
+  duration    Int?     // Duration in seconds
   lessons      Int? 
   language    String   @default("English")
   whatYouWillLearn String[] @default([])

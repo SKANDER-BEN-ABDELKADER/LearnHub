@@ -85,12 +85,18 @@ export function AuthProvider({ children }) {
     // Note: We removed useNavigate from here - navigation should be handled in components
   };
 
+  const updateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+    localStorage.setItem('user', JSON.stringify(updatedUserData));
+  };
+
   const value = {
     user,
     token: access_token,
     loading,
     login,
     logout,
+    updateUser,
     isAuthenticated: !!user && !!access_token && !isTokenExpired(access_token),
     isTokenExpired: () => isTokenExpired(access_token),
   };

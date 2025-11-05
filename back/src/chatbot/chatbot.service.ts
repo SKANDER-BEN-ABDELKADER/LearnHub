@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
+import { LlamaApiService, LlamaApiMessage } from '../llama-api/llama-api.service';
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
@@ -18,6 +18,8 @@ export interface Conversation {
 export class ChatbotService {
   private readonly logger = new Logger(ChatbotService.name);
   private conversations: Map<string, Conversation> = new Map();
+
+  constructor(private readonly llamaApiService: LlamaApiService) {}
 
   async askLlama3(prompt: string, conversationId?: string): Promise<{ response: string; conversationId: string }> {
     try {
@@ -43,32 +45,30 @@ export class ChatbotService {
 
       // Build context from conversation history (last 10 messages)
       const recentMessages = conversation.messages.slice(-10);
-      const context = recentMessages
-        .map(msg => `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}`)
-        .join('\n');
+      
+      // Convert to Llama API message format
+      const apiMessages: LlamaApiMessage[] = recentMessages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'assistant',
+        content: msg.content,
+      }));
 
-      // Prepare the prompt with context
-      const fullPrompt = `Here is the conversation history:
-${context}
+      // Add the system prompt
+      const systemPrompt = 'You are a helpful and knowledgeable AI assistant. Provide clear, accurate, and helpful responses to the user\'s questions.';
 
-Please provide a helpful and relevant response to the user's latest message.`;
+      this.logger.log(`Sending request to Llama API for conversation ${conversation.id}`);
 
-      this.logger.log(`Sending request to Ollama for conversation ${conversation.id}`);
-
-      const response = await axios.post('http://localhost:11434/api/generate', {
-        model: 'llama3',
-        prompt: fullPrompt,
-        stream: false,
-        options: {
+      // Use Llama API service to get response
+      const botResponse = await this.llamaApiService.chatWithMessages(
+        [
+          { role: 'system', content: systemPrompt },
+          ...apiMessages,
+        ],
+        {
           temperature: 0.7,
-          top_p: 0.9,
-          max_tokens: 500,
-        },
-      }, {
-        timeout: 30000, // 30 second timeout
-      });
-
-      const botResponse = response.data.response;
+          maxTokens: 500,
+          topP: 0.9,
+        }
+      );
 
       // Add bot response to conversation
       conversation.messages.push({
@@ -79,7 +79,7 @@ Please provide a helpful and relevant response to the user's latest message.`;
 
       conversation.updatedAt = new Date();
 
-      this.logger.log(`Received response from Ollama for conversation ${conversation.id}`);
+      this.logger.log(`Received response from Llama API for conversation ${conversation.id}`);
 
       return {
         response: botResponse,
@@ -87,21 +87,10 @@ Please provide a helpful and relevant response to the user's latest message.`;
       };
 
     } catch (error) {
-      this.logger.error('Error communicating with Ollama:', error);
+      this.logger.error('Error communicating with Llama API:', error);
       
-      if (axios.isAxiosError(error)) {
-        if (error.code === 'ECONNREFUSED') {
-          throw new Error('Ollama service is not running. Please start Ollama first.');
-        }
-        if (error.response?.status === 404) {
-          throw new Error('Llama3 model not found. Please ensure the model is installed.');
-        }
-        if (error.code === 'ETIMEDOUT') {
-          throw new Error('Request timed out. Please try again.');
-        }
-      }
-      
-      throw new Error('Failed to get response from AI model. Please try again.');
+      // The LlamaApiService already provides user-friendly error messages
+      throw new Error(error.message || 'Failed to get response from AI model. Please try again.');
     }
   }
 

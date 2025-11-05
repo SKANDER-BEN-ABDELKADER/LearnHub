@@ -126,7 +126,7 @@ const CourseDetail = () => {
                 </div>
                 <div className="flex items-center gap-1 text-gray-600">
                   <Clock className="w-5 h-5" />
-                  <span>{videoDuration || course?.duration}</span>
+                    <span>{videoDuration || formatDuration(course?.duration)}</span>
                 </div>
               </div>
 
@@ -358,7 +358,7 @@ const CourseDetail = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Duration:</span>
-                    <span className="font-medium">{videoDuration || course?.duration}</span>
+                    <span className="font-medium">{videoDuration || formatDuration(course?.duration)}</span>
                   </div>
                   {/* <div className="flex justify-between">
                     <span className="text-gray-600">Lessons:</span>
@@ -389,7 +389,7 @@ const CourseDetail = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Play className="w-4 h-4 text-green-600" />
-                      <span>{course?.duration} on-demand video</span>
+                      <span>{formatDuration(course?.duration)} on-demand video</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Download className="w-4 h-4 text-green-600" />

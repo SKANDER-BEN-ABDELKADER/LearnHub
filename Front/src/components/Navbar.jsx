@@ -15,7 +15,7 @@ const Navbar = () => {
   const [tokenExpirationWarning, setTokenExpirationWarning] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
-  const { user, isAuthenticated, logout, token } = useAuth(); 
+  const { user, isAuthenticated, logout, token, updateUser } = useAuth(); 
 
   // Check token expiration and show warning
   useEffect(() => {
@@ -83,8 +83,7 @@ const Navbar = () => {
         experienceLvl: instructorForm.experience_lvl,
       });
       const updatedUser = res.data;
-      setUser(updatedUser);
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      updateUser(updatedUser);
       setShowInstructorForm(false);
       setDashboardView("instructor");
       navigate("/instructor-dashboard");
@@ -117,9 +116,8 @@ const Navbar = () => {
     const response = await api.patch(`/user/${user.id}/toggle-role`);
     const updatedUser = response.data;
     
-    // Update state and storage
-    setUser(updatedUser);
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+    // Update state and storage using the updateUser function from context
+    updateUser(updatedUser);
     
     // Navigate to the appropriate dashboard view
     if (user.actual_role === "INSTRUCTOR") {
@@ -130,7 +128,7 @@ const Navbar = () => {
   } catch (err) {
     console.error("Role toggle error:", err);
     // Use a more user-friendly notification system
-    alert(err.message || "An error occurred while changing roles");
+    alert(err.response?.data?.message || err.message || "An error occurred while changing roles");
   }
   // window.location.reload(); // Refresh UI state 
 };

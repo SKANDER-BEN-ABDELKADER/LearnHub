@@ -22,15 +22,18 @@ const Instructors = () => {
   const { token } = useAuth();
 
   useEffect(() => {
-    fetch("http://localhost:3000/user?role=INSTRUCTOR", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+    // Use the public instructors endpoint
+    fetch("http://localhost:3000/user/instructors")
       .then(res => res.json())
-      .then(data => setInstructors(data || []))
-      .catch(() => setInstructors([]));
-  }, [token]);
+      .then(data => {
+        // Ensure data is an array
+        setInstructors(Array.isArray(data) ? data : []);
+      })
+      .catch((error) => {
+        console.error('Error fetching instructors:', error);
+        setInstructors([]);
+      });
+  }, []);
 
   // Derive available expertise (domains) from fetched instructors
   useEffect(() => {

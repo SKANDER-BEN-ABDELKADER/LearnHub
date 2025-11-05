@@ -1,9 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors, UploadedFile, BadRequestException, UnauthorizedException, NotFoundException, Query, Request } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { Prisma } from '@prisma/client';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesGuard } from '../auth/roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from '../upload/upload.service';
 import { VideoAnalysisService } from '../video-analysis/video-analysis.service';
@@ -27,6 +25,7 @@ export class CourseController {
   ) {
     console.log('Video file received:', videoFile);
     let videoAnalysis: { whatYouWillLearn?: string[]; requirements?: string[] } | null = null;
+    let videoDuration: number | null = null;
     
     if (videoFile) {
       console.log('Video filename:', videoFile.filename);
@@ -34,9 +33,18 @@ export class CourseController {
       createCourseDto.videoUrl = this.uploadService.getVideoUrl(videoFile.filename);
       console.log('Video URL:', createCourseDto.videoUrl);
       
+      const videoPath = this.uploadService.getVideoPath(videoFile.filename);
+      
+      // Get video duration
+      try {
+        videoDuration = await this.videoAnalysisService.getVideoDuration(videoPath);
+        console.log('Video duration extracted:', videoDuration);
+      } catch (error) {
+        console.error('Failed to extract video duration:', error);
+      }
+      
       // Analyze video to extract learning objectives and requirements
       try {
-        const videoPath = this.uploadService.getVideoPath(videoFile.filename);
         videoAnalysis = await this.videoAnalysisService.analyzeVideo(videoPath);
         console.log('Video analysis completed:', videoAnalysis);
       } catch (error) {
@@ -53,6 +61,7 @@ export class CourseController {
       price: createCourseDto.price,
       hided: createCourseDto.hided || false,
       videoUrl: createCourseDto.videoUrl,
+      duration: videoDuration || createCourseDto.duration,
       whatYouWillLearn: Array.isArray(createCourseDto.whatYouWillLearn) && createCourseDto.whatYouWillLearn.length > 0
         ? createCourseDto.whatYouWillLearn
         : (videoAnalysis?.whatYouWillLearn || []),
@@ -66,7 +75,7 @@ export class CourseController {
     
     return this.courseService.create(courseData);
   }
-  @UseGuards(JwtAuthGuard)
+  
   @Get()
   findAll(
     @Query('page') page?: string,
@@ -114,16 +123,28 @@ export class CourseController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('video'))
   async update(
-    @Param('id') id: string, 
+    @Param('id') id: string,
+    @Request() req: any,
     @Body() updateCourseDto: UpdateCourseDto,
     @UploadedFile() videoFile?: Express.Multer.File
   ) {
+    // Check if user is admin or the course instructor
+    const course = await this.courseService.findOne(+id);
+    
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+    
+    if (req.user.role !== 'ADMIN' && course.instructorId !== req.user.id) {
+      throw new UnauthorizedException('You do not have permission to update this course');
+    }
+
     console.log('Update - Video file received:', videoFile);
     let videoAnalysis: { whatYouWillLearn?: string[]; requirements?: string[] } | null = null;
+    let videoDuration: number | null = null;
     
     if (videoFile) {
       console.log('Update - Video filename:', videoFile.filename);
@@ -131,9 +152,18 @@ export class CourseController {
       updateCourseDto.videoUrl = this.uploadService.getVideoUrl(videoFile.filename);
       console.log('Update - Video URL:', updateCourseDto.videoUrl);
       
+      const videoPath = this.uploadService.getVideoPath(videoFile.filename);
+      
+      // Get video duration
+      try {
+        videoDuration = await this.videoAnalysisService.getVideoDuration(videoPath);
+        console.log('Video duration extracted:', videoDuration);
+      } catch (error) {
+        console.error('Failed to extract video duration:', error);
+      }
+      
       // Analyze video to extract learning objectives and requirements
       try {
-        const videoPath = this.uploadService.getVideoPath(videoFile.filename);
         videoAnalysis = await this.videoAnalysisService.analyzeVideo(videoPath);
         console.log('Video analysis completed:', videoAnalysis);
       } catch (error) {
@@ -150,6 +180,7 @@ export class CourseController {
       price: updateCourseDto.price,
       hided: updateCourseDto.hided,
       videoUrl: updateCourseDto.videoUrl,
+      duration: videoDuration || updateCourseDto.duration,
       whatYouWillLearn: videoAnalysis?.whatYouWillLearn || updateCourseDto.whatYouWillLearn,
       requirements: videoAnalysis?.requirements || updateCourseDto.requirements,
     };
@@ -158,9 +189,19 @@ export class CourseController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('ADMIN')
-  remove(@Param('id') id: string) {
+  @UseGuards(JwtAuthGuard)
+  async remove(@Param('id') id: string, @Request() req: any) {
+    // Check if user is admin or the course instructor
+    const course = await this.courseService.findOne(+id);
+    
+    if (!course) {
+      throw new NotFoundException('Course not found');
+    }
+    
+    if (req.user.role !== 'ADMIN' && course.instructorId !== req.user.id) {
+      throw new UnauthorizedException('You do not have permission to delete this course');
+    }
+    
     return this.courseService.remove(+id);
   }
 }

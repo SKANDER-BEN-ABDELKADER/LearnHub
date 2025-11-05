@@ -436,7 +436,7 @@ const AdminDashboard = () => {
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="role" className="text-right">Role</Label>
                             <Select value={userForm.role} onValueChange={(value) => setUserForm({...userForm, role: value})}>
-                              <SelectTrigger className="col-span-3">
+                              <SelectTrigger id="role" className="col-span-3">
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -461,7 +461,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-2">
                     <Label htmlFor="userRoleFilter">Role:</Label>
                     <Select value={userFilters.role} onValueChange={(value) => setUserFilters({...userFilters, role: value})}>
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger id="userRoleFilter" className="w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -571,7 +571,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-2">
                     <Label htmlFor="courseCategoryFilter">Category:</Label>
                     <Select value={courseFilters.category} onValueChange={(value) => setCourseFilters({...courseFilters, category: value})}>
-                      <SelectTrigger className="w-40">
+                      <SelectTrigger id="courseCategoryFilter" className="w-40">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -585,7 +585,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-2">
                     <Label htmlFor="courseLevelFilter">Level:</Label>
                     <Select value={courseFilters.level} onValueChange={(value) => setCourseFilters({...courseFilters, level: value})}>
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger id="courseLevelFilter" className="w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -728,7 +728,7 @@ const AdminDashboard = () => {
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="level" className="text-right">Level</Label>
                       <Select value={courseForm.level} onValueChange={(value) => setCourseForm({...courseForm, level: value})}>
-                        <SelectTrigger className="col-span-3">
+                        <SelectTrigger id="courseEditLevel" className="col-span-3">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -784,7 +784,7 @@ const AdminDashboard = () => {
                   <div className="flex items-center gap-2">
                     <Label htmlFor="reviewRatingFilter">Rating:</Label>
                     <Select value={reviewFilters.rating} onValueChange={(value) => setReviewFilters({...reviewFilters, rating: value})}>
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger id="reviewRatingFilter" className="w-32">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -905,7 +905,7 @@ const AdminDashboard = () => {
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="rating" className="text-right">Rating</Label>
                       <Select value={reviewForm.value.toString()} onValueChange={(value) => setReviewForm({...reviewForm, value: parseInt(value)})}>
-                        <SelectTrigger className="col-span-3">
+                        <SelectTrigger id="rating" className="col-span-3">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

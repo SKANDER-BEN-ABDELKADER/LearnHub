@@ -7,6 +7,7 @@ import { Label } from "../components/ui/label";
 import { Separator } from "../components/ui/separator";
 import { Book, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../components/context/AuthContext";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,6 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,16 +44,18 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
       const data = await response.json();
-      // Save token and user info in localStorage
-      localStorage.setItem("access_token", data.access_token);
-      if (data.user) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-      }
-      // Redirect based on user role
-      if (data.user && data.user.role === 'ADMIN') {
-        navigate("/admin");
+      
+      // Use AuthContext's login function to update state AND localStorage
+      login(data.user, data.access_token);
+      
+      
+      // Redirect based on user actual_role (their true role)
+      if (data.user && data.user.actual_role === 'ADMIN') {
+        navigate("/admin", { replace: true });
+      } else if (data.user && data.user.actual_role === 'INSTRUCTOR') {
+        navigate("/instructor-dashboard", { replace: true });
       } else {
-        navigate("/dashboard");
+        navigate("/", { replace: true });
       }
     } catch (err) {
       setError(err.message);

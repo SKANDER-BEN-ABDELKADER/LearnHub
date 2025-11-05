@@ -6,13 +6,14 @@ import { spawn } from 'child_process';
 import { promisify } from 'util';
 import { writeFile, unlink } from 'fs/promises';
 import { defaultVideoAnalysisConfig, VideoAnalysisConfig } from './video-analysis.config';
+import { LlamaApiService } from '../llama-api/llama-api.service';
 
 @Injectable()
 export class VideoAnalysisService {
   private readonly logger = new Logger(VideoAnalysisService.name);
   private readonly config: VideoAnalysisConfig;
 
-  constructor() {
+  constructor(private readonly llamaApiService: LlamaApiService) {
     this.config = defaultVideoAnalysisConfig;
   }
 
@@ -84,37 +85,21 @@ export class VideoAnalysisService {
   }
 
   private async transcribeAudio(audioPath: string): Promise<string> {
+    // Try Python Whisper transcriber first (most reliable for transcription)
     try {
-      // Read audio file as base64
-      const audioBuffer = await fs.promises.readFile(audioPath);
-      const base64Audio = audioBuffer.toString('base64');
-
-      // Try Ollama with Whisper model for transcription
-      const response = await axios.post(`${this.config.ollama.baseUrl}/api/generate`, {
-        model: this.config.ollama.whisperModel,
-        prompt: base64Audio,
-        options: {
-          temperature: 0.0,
-        },
-      }, {
-        timeout: this.config.ollama.timeout,
-      });
-
-      return response.data.response;
-    } catch (error: any) {
-      this.logger.warn('Ollama transcription failed, attempting Python Whisper fallback...');
-      // If Ollama model is missing or any error occurs, try Python transcriber fallback
-      try {
-        const transcription = await this.transcribeWithPython(audioPath);
-        if (transcription && transcription.trim().length > 0) {
-          return transcription;
-        }
-      } catch (pyErr) {
-        this.logger.error('Python Whisper fallback failed:', pyErr);
+      this.logger.log('Attempting transcription with Python Whisper...');
+      const transcription = await this.transcribeWithPython(audioPath);
+      if (transcription && transcription.trim().length > 0) {
+        this.logger.log('Transcription successful with Python Whisper');
+        return transcription;
       }
-      // Final fallback: return a generic transcription
-      return 'This is a course video that covers various topics and concepts. Students will learn important skills and techniques.';
+    } catch (pyErr) {
+      this.logger.warn('Python Whisper transcription failed:', pyErr);
     }
+    
+    // Fallback: return a generic transcription
+    this.logger.warn('Using fallback generic transcription');
+    return 'This is a course video that covers various topics and concepts. Students will learn important skills and techniques.';
   }
 
   private async transcribeWithPython(audioPath: string): Promise<string> {
@@ -192,48 +177,31 @@ IMPORTANT:
 - Ensure the JSON is properly formatted and valid
 `;
 
-      const response = await axios.post(`${this.config.ollama.baseUrl}/api/generate`, {
-        model: this.config.ollama.analysisModel,
-        prompt: analysisPrompt,
-        stream: false,
-        options: {
-          temperature: this.config.analysis.temperature,
-          top_p: 0.9,
-          max_tokens: this.config.analysis.maxTokens,
-        },
-      }, {
-        timeout: this.config.ollama.timeout,
+      const systemPrompt = 'You are an expert course content analyzer. Extract structured information from course transcriptions and return valid JSON only.';
+
+      this.logger.log('Analyzing transcription with Llama API');
+
+      // Use the extractJson method for structured data extraction
+      const analysis = await this.llamaApiService.extractJson<{
+        whatYouWillLearn: string[];
+        requirements: string[];
+      }>(analysisPrompt, systemPrompt, {
+        temperature: this.config.analysis.temperature,
+        maxTokens: this.config.analysis.maxTokens,
+        topP: 0.9,
       });
 
-      const responseText = response.data.response;
-      
-      // Try to extract JSON from the response
-      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
+      // Validate and return the response
+      if (analysis.whatYouWillLearn && analysis.requirements) {
         return {
-          whatYouWillLearn: parsed.whatYouWillLearn || [],
-          requirements: parsed.requirements || []
+          whatYouWillLearn: analysis.whatYouWillLearn,
+          requirements: analysis.requirements,
         };
       }
 
-      // Fallback parsing if JSON extraction fails
-      const parsedFallback = this.parseAnalysisResponse(responseText);
-      // Ensure we don't return empty arrays
-      if ((parsedFallback.whatYouWillLearn?.length || 0) === 0) {
-        parsedFallback.whatYouWillLearn = [
-          'Develop important skills and techniques',
-          'Gain practical knowledge in various topics and concepts',
-          'Improve understanding of key ideas and principles',
-        ];
-      }
-      if ((parsedFallback.requirements?.length || 0) === 0) {
-        parsedFallback.requirements = [
-          'Basic computer skills',
-          'Willingness to learn',
-        ];
-      }
-      return parsedFallback;
+      // Fallback if structure is invalid
+      throw new Error('Invalid response structure from API');
+
     } catch (error) {
       this.logger.error('Error analyzing transcription:', error);
       return {
@@ -309,5 +277,51 @@ IMPORTANT:
     } catch (error) {
       this.logger.warn('Could not delete temporary audio file:', error);
     }
+  }
+
+  /**
+   * Get video duration in seconds using ffprobe
+   */
+  async getVideoDuration(videoPath: string): Promise<number | null> {
+    return new Promise((resolve) => {
+      const ffprobe = spawn('ffprobe', [
+        '-v', 'error',
+        '-show_entries', 'format=duration',
+        '-of', 'default=noprint_wrappers=1:nokey=1',
+        videoPath
+      ]);
+
+      let stdout = '';
+      let stderr = '';
+
+      ffprobe.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      ffprobe.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      ffprobe.on('close', (code) => {
+        if (code === 0 && stdout.trim()) {
+          const duration = parseFloat(stdout.trim());
+          if (!isNaN(duration)) {
+            this.logger.log(`Video duration: ${duration} seconds`);
+            resolve(Math.floor(duration)); // Return duration in seconds as integer
+          } else {
+            this.logger.warn('Could not parse video duration');
+            resolve(null);
+          }
+        } else {
+          this.logger.warn(`ffprobe failed with code ${code}: ${stderr}`);
+          resolve(null);
+        }
+      });
+
+      ffprobe.on('error', (error) => {
+        this.logger.error('Error running ffprobe:', error);
+        resolve(null);
+      });
+    });
   }
 } 

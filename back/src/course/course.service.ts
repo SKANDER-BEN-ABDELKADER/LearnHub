@@ -82,6 +82,9 @@ export class CourseService {
           ratings: {
             select: { value: true },
           },
+          students: {
+            select: { id: true },
+          },
         },
         where,
         skip,
@@ -95,8 +98,9 @@ export class CourseService {
       const ratingValues = (course as any).ratings?.map((r: { value: number }) => r.value) || [];
       const ratingCount = ratingValues.length;
       const rating = ratingCount > 0 ? Number((ratingValues.reduce((a, b) => a + b, 0) / ratingCount).toFixed(1)) : 0;
-      const { ratings, ...rest } = course as any;
-      return { ...rest, rating, ratingCount };
+      const studentsCount = (course as any).students?.length || 0;
+      const { ratings, students, ...rest } = course as any;
+      return { ...rest, rating, ratingCount, students: studentsCount };
     });
 
     return {
@@ -265,11 +269,29 @@ export class CourseService {
 
   // Remove 
   async remove(id: number) {
+    // Delete all ratings associated with the course first
+    await this.databaseService.rating.deleteMany({
+      where: {
+        courseId: id,
+      }
+    });
+
+    // Unenroll all students from the course
+    await this.databaseService.course.update({
+      where: { id },
+      data: {
+        students: {
+          set: [] // Remove all student enrollments
+        }
+      }
+    });
+
+    // Now delete the course
     return this.databaseService.course.delete({
-      where:{
+      where: {
         id,
       }
-    })
+    });
   }
 
   // Find by instructor

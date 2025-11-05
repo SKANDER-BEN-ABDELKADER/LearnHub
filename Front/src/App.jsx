@@ -18,6 +18,7 @@ import ProtectedRoute from './components/ProtectedRoutes.jsx';
 import AdminDashboard from './pages/AdminDashboard';
 import InstructorProfile from './pages/InstructorProfile';
 import Chatbot from './pages/ChatbotPage.jsx';
+import About from './pages/About.jsx';
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
         <Route path="/" element={<Index />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/about" element={<About />} />
 
         {/* Protected routes: */}
         <Route element={<ProtectedRoute />}>

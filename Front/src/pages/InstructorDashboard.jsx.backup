@@ -848,33 +848,20 @@ const InstructorDashboard = () => {
           </DialogContent>
         </Dialog>
         
-        {/* Delete Modal */}
+        {/* Delete Course Confirmation Modal */}
         <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-red-600">
-                <Trash2 className="w-5 h-5" />
-                Delete Course
-              </DialogTitle>
+              <DialogTitle>Delete Course</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <p className="text-gray-600">
-                Are you sure you want to delete <span className="font-semibold">"{deleteCourse?.title}"</span>? 
+                Are you sure you want to delete "{deleteCourse?.title}"? This action cannot be undone.
               </p>
-              <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <p className="text-sm text-red-800">
-                  ⚠️ This action cannot be undone. All course data, including student enrollments and ratings, will be permanently removed.
-                </p>
-              </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleDeleteCourse}>
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete Course
-              </Button>
+              <Button variant="outline" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+              <Button variant="destructive" onClick={handleDeleteCourse}>Delete Course</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

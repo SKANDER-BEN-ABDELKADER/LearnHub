@@ -27,6 +27,11 @@ export class CreateCourseDto {
   videoUrl?: string;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  duration?: number;
+
+  @IsOptional()
   @IsBoolean()
   @Transform(({ value }) => value === 'true' || value === true)
   hided?: boolean;
