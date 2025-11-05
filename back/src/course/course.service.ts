@@ -217,6 +217,15 @@ export class CourseService {
         ratings: {
           select: { value: true },
         },
+        videoProgress: {
+          where: { studentId },
+          select: {
+            currentTime: true,
+            duration: true,
+            completed: true,
+            lastWatchedAt: true,
+          },
+        },
       },
       orderBy: { id: 'desc' },
     });
@@ -225,8 +234,23 @@ export class CourseService {
       const ratingValues = (course as any).ratings?.map((r: { value: number }) => r.value) || [];
       const ratingCount = ratingValues.length;
       const rating = ratingCount > 0 ? Number((ratingValues.reduce((a, b) => a + b, 0) / ratingCount).toFixed(1)) : 0;
-      const { ratings, ...rest } = course as any;
-      return { ...rest, rating, ratingCount };
+      const { ratings, videoProgress, ...rest } = course as any;
+      
+      // Calculate progress from video progress data
+      const progress = videoProgress?.[0];
+      const progressPercentage = progress && progress.duration > 0
+        ? Math.round((progress.currentTime / progress.duration) * 100)
+        : 0;
+      
+      return { 
+        ...rest, 
+        rating, 
+        ratingCount,
+        progress: progressPercentage,
+        currentTime: progress?.currentTime || 0,
+        completed: progress?.completed || false,
+        lastWatchedAt: progress?.lastWatchedAt,
+      };
     });
   }
 

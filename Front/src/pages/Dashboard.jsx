@@ -48,6 +48,7 @@ const Dashboard = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [sortBy, setSortBy] = useState("recent");
+  const [studentStats, setStudentStats] = useState(null);
 
   useEffect(() => {
     // Populate profile from auth context
@@ -59,6 +60,20 @@ const Dashboard = () => {
       });
     }
   }, [authUser]);
+
+  useEffect(() => {
+    // Fetch student stats
+    const fetchStats = async () => {
+      try {
+        const res = await api.get('/video-progress/stats/me');
+        setStudentStats(res.data);
+      } catch (e) {
+        console.error('Failed to fetch stats:', e);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   useEffect(() => {
     // Fetch only courses the user is enrolled in
@@ -105,6 +120,19 @@ const Dashboard = () => {
 
   // Calculate enhanced stats
   const stats = React.useMemo(() => {
+    // Use backend stats if available, otherwise calculate from courses
+    if (studentStats) {
+      return {
+        totalCourses: studentStats.totalCourses,
+        completedCourses: studentStats.completedCourses,
+        inProgressCourses: studentStats.inProgressCourses,
+        totalHours: parseFloat(studentStats.totalHoursWatched || 0),
+        avgProgress: studentStats.averageProgress,
+        certificates: studentStats.completedCourses
+      };
+    }
+    
+    // Fallback to local calculation
     const totalCourses = courses.length;
     const completedCourses = courses.filter(c => c.completed).length;
     const inProgressCourses = courses.filter(c => c.progress > 0 && c.progress < 100).length;
@@ -119,9 +147,9 @@ const Dashboard = () => {
       inProgressCourses,
       totalHours,
       avgProgress,
-      certificates: completedCourses // For now, certificates = completed courses
+      certificates: completedCourses
     };
-  }, [courses]);
+  }, [courses, studentStats]);
 
   // Format duration helper
   const formatDuration = (seconds) => {

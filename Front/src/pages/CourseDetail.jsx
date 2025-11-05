@@ -11,6 +11,7 @@ import { Star, Users, Clock, Play, Download, Award, CheckCircle, Calendar, Globe
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import ReviewForm from "../components/ReviewForm";
+import VideoPlayer from "../components/VideoPlayer";
 import { useAuth } from "../components/context/AuthContext";
 import { getImageUrl } from "../utils/imageUtils";
 const CourseDetail = () => {
@@ -19,10 +20,21 @@ const CourseDetail = () => {
   const { token, user } = useAuth();
   const [course, setCourse] = useState(null);
   const [videoDuration, setVideoDuration] = useState("");
+  const [videoProgress, setVideoProgress] = useState(null);
 
   const API_BASE = "http://localhost:3000"; 
   const formatDuration = (seconds) => {
     if (!seconds && seconds !== 0) return "";
+    const total = Math.floor(seconds);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    const two = (n) => String(n).padStart(2, '0');
+    return h > 0 ? `${h}:${two(m)}:${two(s)}` : `${m}:${two(s)}`;
+  };
+
+  const formatTime = (seconds) => {
+    if (!seconds && seconds !== 0) return "0:00";
     const total = Math.floor(seconds);
     const h = Math.floor(total / 3600);
     const m = Math.floor((total % 3600) / 60);
@@ -146,19 +158,42 @@ const CourseDetail = () => {
 
             {/* Course Video/Image */}
             <div className="relative mb-8 rounded-lg overflow-hidden">
-                    {course && course.videoUrl && (
+                    {course && course.videoUrl && isEnrolled && (
                       <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-sm text-blue-600 mb-2">
-                        </div>
+                        {/* {videoProgress && videoProgress.currentTime > 0 && (
+                          <div className="flex items-center gap-2 text-sm text-blue-600 mb-2">
+                            <Clock className="w-4 h-4" />
+                            <span>Last watched: {formatTime(videoProgress.currentTime)} / {formatTime(videoProgress.duration)}</span>
+                            <Progress value={(videoProgress.currentTime / videoProgress.duration) * 100} className="flex-1 max-w-xs" />
+                          </div>
+                        )} */}
+                        <VideoPlayer
+                          courseId={id}
+                          videoUrl={course.videoUrl}
+                          onProgressUpdate={(progress) => {
+                            setVideoProgress(progress);
+                            if (!videoDuration && progress.duration) {
+                              setVideoDuration(formatDuration(progress.duration));
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                    {course && course.videoUrl && !isEnrolled && (
+                      <div className="relative">
                         <video 
-                          className="w-full  object-cover rounded"
-                          controls
+                          className="w-full object-cover rounded opacity-50"
                           preload="metadata"
                           onLoadedMetadata={(e) => setVideoDuration(formatDuration(e.currentTarget.duration))}
                         >
                           <source src={course.videoUrl} type="video/mp4" />
-                          Your browser does not support the video tag.
                         </video>
+                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                          <div className="text-center">
+                            <Play className="w-16 h-16 text-white mx-auto mb-4" />
+                            <p className="text-white text-lg font-semibold">Enroll to watch this course</p>
+                          </div>
+                        </div>
                       </div>
                     )}
             </div>

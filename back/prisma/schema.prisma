@@ -30,6 +30,7 @@ model User {
   coursesCreated Course[]    @relation("InstructorCourses")
   coursesEnrolled Course[]   @relation("StudentCourses")
   ratingsGiven   Rating[]
+  videoProgress  VideoProgress[]
 }
 
 model Course {
@@ -50,6 +51,7 @@ model Course {
   instructorId Int
   students    User[]   @relation(name: "StudentCourses")
   ratings     Rating[]
+  videoProgress VideoProgress[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -64,6 +66,24 @@ model Rating {
   courseId  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model VideoProgress {
+  id              Int      @id @default(autoincrement())
+  student         User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId       Int
+  course          Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId        Int
+  currentTime     Float    @default(0)  // Current playback position in seconds
+  duration        Float    @default(0)  // Total video duration in seconds
+  completed       Boolean  @default(false)
+  lastWatchedAt   DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([studentId, courseId])
+  @@index([studentId])
+  @@index([courseId])
 }
 
 enum Role {

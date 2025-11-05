@@ -8,9 +8,10 @@ import { RatingModule } from './rating/rating.module';
 import { AuthModule } from './auth/auth.module';
 import { UploadModule } from './upload/upload.module';
 import { ChatbotModule } from './chatbot/chatbot.module';
+import { VideoProgressModule } from './video-progress/video-progress.module';
 
 @Module({
-  imports: [DatabaseModule, UserModule, CourseModule, RatingModule, AuthModule, UploadModule, ChatbotModule],
+  imports: [DatabaseModule, UserModule, CourseModule, RatingModule, AuthModule, UploadModule, ChatbotModule, VideoProgressModule],
   controllers: [AppController],
   providers: [AppService],
 })
