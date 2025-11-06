@@ -34,6 +34,18 @@ const AdminDashboard = () => {
       </div>
     );
   }
+
+  // Helper function to format duration in hh:mm:ss
+  const formatDurationInHours = (seconds) => {
+    if (!seconds || seconds === 0) return "00:00:00";
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    
+    const pad = (num) => String(num).padStart(2, '0');
+    return `${pad(hours)}:${pad(minutes)}:${pad(secs)}`;
+  };
+
   const [activeTab, setActiveTab] = useState("users");
 
   // Filter states
@@ -74,6 +86,7 @@ const AdminDashboard = () => {
     description: "",
     category: "",
     level: "BEGINNER",
+    duration: "00:00",
     price: 0,
     hided: false
   });
@@ -262,6 +275,7 @@ const AdminDashboard = () => {
       description: course.description || "",
       category: course.category || "",
       level: course.level || "BEGINNER",
+      duration: course.duration || "00:00",
       price: course.price || 0,
       hided: course.hided || false
     });
@@ -274,6 +288,7 @@ const AdminDashboard = () => {
       description: "",
       category: "",
       level: "BEGINNER",
+      duration: "00:00",
       price: 0,
       hided: false
     });
@@ -621,6 +636,7 @@ const AdminDashboard = () => {
                         <TableHead className="text-blue-900 text-xs sm:text-sm">Title</TableHead>
                         <TableHead className="text-blue-900 text-xs sm:text-sm hidden lg:table-cell">Category</TableHead>
                         <TableHead className="text-blue-900 text-xs sm:text-sm hidden md:table-cell">Level</TableHead>
+                        <TableHead className="text-blue-900 text-xs sm:text-sm hidden md:table-cell">Duration</TableHead>
                         <TableHead className="text-blue-900 text-xs sm:text-sm">Price</TableHead>
                         <TableHead className="text-blue-900 text-xs sm:text-sm hidden sm:table-cell">Status</TableHead>
                         <TableHead className="text-blue-900 text-xs sm:text-sm">Actions</TableHead>
@@ -639,6 +655,7 @@ const AdminDashboard = () => {
                           <TableCell className="hidden md:table-cell">
                             <Badge variant="outline" className="text-xs">{course.level}</Badge>
                           </TableCell>
+                          <TableCell className="text-xs sm:text-sm hidden md:table-cell">{formatDurationInHours(course.duration)}</TableCell>
                           <TableCell className="text-xs sm:text-sm">${course.price}</TableCell>
                           <TableCell className="hidden sm:table-cell">
                             <Badge variant={course.hided ? 'secondary' : 'default'} className="text-xs">
