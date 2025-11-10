@@ -217,7 +217,7 @@ const Navbar = () => {
           ) : null}
 
           {/* Search Bar - Desktop - Only show for students or non-authenticated users */}
-          {user?.actual_role !== "INSTRUCTOR" && (
+          {/* {user?.actual_role !== "INSTRUCTOR" && (
             <div className="hidden lg:flex items-center bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 w-80 hover:border-blue-300 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all duration-200">
               <Search className="w-4 h-4 text-gray-400 mr-2" />
               <input
@@ -226,7 +226,7 @@ const Navbar = () => {
                 className="bg-transparent outline-none w-full text-sm placeholder:text-gray-400"
               />
             </div>
-          )}
+          )} */}
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-3">
@@ -431,7 +431,7 @@ const Navbar = () => {
           <div className="md:hidden border-t border-gray-100 bg-white animate-in slide-in-from-top duration-200">
             <div className="flex flex-col py-4 space-y-1">
               {/* Mobile Search - Only show for students or non-authenticated users */}
-              {user?.actual_role !== "INSTRUCTOR" && (
+              {/* {user?.actual_role !== "INSTRUCTOR" && (
                 <div className="px-4 mb-2">
                   <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
                     <Search className="w-4 h-4 text-gray-400 mr-2" />
@@ -442,7 +442,7 @@ const Navbar = () => {
                     />
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Token Warning - Mobile */}
               {tokenExpirationWarning && (
